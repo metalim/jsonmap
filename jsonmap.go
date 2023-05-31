@@ -2,38 +2,28 @@ package jsonmap
 
 type Key = string
 type Value = any
-type Order = int
-
-type element struct {
-	value Value
-	order Order
-}
 
 type Map struct {
-	m         map[Key]element
-	keys      []Key
-	nextOrder Order
+	m    map[Key]Value
+	keys []Key
 }
 
 func New() *Map {
 	return &Map{
-		m: make(map[Key]element),
+		m: make(map[Key]Value),
 	}
 }
 
 func (m *Map) Set(key Key, value Value) {
-	if el, ok := m.m[key]; ok {
-		m.m[key] = element{value: value, order: el.order}
-		return
+	if _, ok := m.m[key]; !ok {
+		m.keys = append(m.keys, key)
 	}
-	m.keys = append(m.keys, key)
-	m.m[key] = element{value: value, order: m.nextOrder}
-	m.nextOrder++
+	m.m[key] = value
 }
 
 func (m *Map) Get(key string) (value any, ok bool) {
-	el, ok := m.m[key]
-	return el.value, ok
+	value, ok = m.m[key]
+	return
 }
 
 func (m *Map) Delete(key string) {
@@ -45,6 +35,8 @@ func (m *Map) Delete(key string) {
 	m.keys = append(m.keys[:i], m.keys[i+1:]...)
 }
 
+// with additional O(n) memory this can be done in O(log n) via binary search
+// or even O(1) via more advanced data structures
 func (m *Map) index(key string) int {
 	for i, k := range m.keys {
 		if k == key {
