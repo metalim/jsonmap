@@ -42,9 +42,3 @@ func TestJSONMap(t *testing.T) {
 	assert(t, !ok)
 	assert(t, v == nil)
 }
-
-func assert(t *testing.T, b bool) {
-	if !b {
-		t.Fail()
-	}
-}
