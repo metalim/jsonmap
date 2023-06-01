@@ -25,6 +25,7 @@ func (m *Map) UnmarshalJSON(data []byte) error {
 
 func decodeMap(d *json.Decoder, m *Map) error {
 	for {
+		// key or end
 		tok, err := d.Token()
 		if err != nil {
 			return err
@@ -39,6 +40,7 @@ func decodeMap(d *json.Decoder, m *Map) error {
 			return errors.New("expected string key")
 		}
 
+		// value
 		tok, err = d.Token()
 		if err != nil {
 			return err
@@ -55,8 +57,7 @@ func decodeMap(d *json.Decoder, m *Map) error {
 			m.Push(key, m2)
 
 		case json.Delim('['):
-			a := make([]any, 0)
-			err = decodeArray(d, a)
+			a, err := decodeArray(d)
 			if err != nil {
 				return err
 			}
@@ -68,32 +69,31 @@ func decodeMap(d *json.Decoder, m *Map) error {
 	}
 }
 
-func decodeArray(d *json.Decoder, a []any) error {
+func decodeArray(d *json.Decoder) ([]any, error) {
+	a := make([]any, 0)
 	for {
 		tok, err := d.Token()
 		if err != nil {
-			return err
-		}
-
-		if tok == json.Delim(']') {
-			return nil
+			return a, err
 		}
 
 		switch tok {
+
+		case json.Delim(']'):
+			return a, nil
 
 		case json.Delim('{'):
 			m := New()
 			err = decodeMap(d, m)
 			if err != nil {
-				return err
+				return a, err
 			}
 			a = append(a, m)
 
 		case json.Delim('['):
-			a2 := make([]any, 0)
-			err = decodeArray(d, a2)
+			a2, err := decodeArray(d)
 			if err != nil {
-				return err
+				return a, err
 			}
 			a = append(a, a2)
 

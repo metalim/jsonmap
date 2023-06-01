@@ -1,8 +1,25 @@
 package jsonmap
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/json"
+)
 
 func (m *Map) MarshalJSON() ([]byte, error) {
-	// TODO: implement
-	return json.Marshal(m.m)
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	enc := json.NewEncoder(&buf)
+	for i, key := range m.keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteByte('"')
+		buf.WriteString(key)
+		buf.WriteString(`":`)
+		if err := enc.Encode(m.m[key]); err != nil {
+			return nil, err
+		}
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
 }

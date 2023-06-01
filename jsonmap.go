@@ -38,13 +38,13 @@ func (m *Map) Delete(key string) {
 		return
 	}
 	delete(m.m, key)
-	i := m.index(key)
+	i := m.IndexKey(key)
 	m.keys = append(m.keys[:i], m.keys[i+1:]...)
 }
 
-// with additional O(n) memory this can be done in O(log n) via binary search
-// or even O(1) via more advanced data structures
-func (m *Map) index(key string) int {
+// with additional O(n) memory this can be done in O(log n) via binary search,
+// or even O(1) via more advanced data structures. But lets keep it simple for now
+func (m *Map) IndexKey(key string) int {
 	for i, k := range m.keys {
 		if k == key {
 			return i

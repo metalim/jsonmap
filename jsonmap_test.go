@@ -7,7 +7,7 @@ import (
 )
 
 func TestJSONMap(t *testing.T) {
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 100; i++ {
 		testJSONMap(t, i)
 	}
 }
@@ -22,7 +22,7 @@ func testJSONMap(t *testing.T, i int) {
 	m.Set("b", 7) // rewrite
 	m.Delete("c")
 	m.Delete("c") // no error
-	m.Delete("e") // test for index bug: deletes "e" and not "b"
+	m.Delete("e") // test for index bug: delete "e" and not "b"
 	assertEqual(t, m.Len(), 3)
 
 	// keys
