@@ -1,50 +1,51 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/metalim/jsonmap"
 )
 
+const input = `{"an":"article","empty":null,"sub":{"x":1,"y":2},"bool":false,"array":[1,2,3]}`
+
 func main() {
-	demo1()
-}
-
-func demo1() {
 	m := jsonmap.New()
-	m.Set("a", "bar")
-	m.Set("c", "qux")
-	m.Set("aa", "quux")
-	m.Set("ab", "corge")
-	m.Set("ac", "grault")
-	m.Set("ba", "garply")
-	m.Set("bb", "waldo")
-	m.Set("b", "fred")
 
-	m.Delete("aa")
-	m.Delete("bb")
-
-	m2 := jsonmap.New()
-	m2.Set("a", "bar")
-	m2.Set("c", "qux")
-	m.Set("ccc", m2)
-
-	m.Set("aaa", "plugh")
-	m.Set("aab", "xyzzy")
-	m.Set("aac", "thud")
-	m.Set("baa", "foo")
-
-	fmt.Println(*m)
-	var iterate func(m *jsonmap.Map, prefix string)
-	iterate = func(m *jsonmap.Map, prefix string) {
-		for _, key := range m.Keys() {
-			val, _ := m.Get(key)
-			if v, ok := val.(*jsonmap.Map); ok {
-				iterate(v, prefix+key+"/")
-				continue
-			}
-			fmt.Printf("%s%s: %v\n", prefix, key, val)
-		}
+	// unmarshal, keeping order
+	err := json.Unmarshal([]byte(input), &m)
+	if err != nil {
+		panic(err)
 	}
-	iterate(m, "")
+
+	fmt.Println(m.Keys())         // [an empty sub bool array]
+	fmt.Println(m.Get("an"))      // article true
+	fmt.Println(m.Get("nothing")) // <nil> false
+
+	// marshal, keeping order
+	output, err := json.Marshal(&m)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(output) == input) // true
+
+	// set new values, keeping order of existing keys
+	m.Set("an", "bar")
+	m.Set("truth", true)
+	fmt.Println(m.Keys()) // [an empty sub bool array truth]
+
+	// delete key "sub"
+	m.Delete("sub")
+	fmt.Println(m.Keys()) // [an empty bool array truth]
+
+	// update value for key "an", and move it to the end
+	m.Push("an", false)
+	fmt.Println(m.Keys()) // [empty bool array truth an]
+
+	data, err := json.Marshal(&m)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(data)) // {"empty":null,"bool":false,"array":[1,2,3],"truth":true,"an":false}
 }
