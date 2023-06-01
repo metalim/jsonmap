@@ -2,53 +2,58 @@ package jsonmap_test
 
 import (
 	"encoding/json"
-	"log"
+	"strings"
 	"testing"
 
 	"github.com/metalim/jsonmap"
 )
 
 func TestJSON(t *testing.T) {
+	// due to random nature of Go map, we need to test it many times
+	for i := 0; i < 100; i++ {
+		testJSON(t, i)
+	}
+}
+
+func testJSON(t *testing.T, i int) {
 	m := jsonmap.New()
 
 	// unmarshal
 	json.Unmarshal([]byte(testData), &m)
-	log.Println(m)
 
-	assert(t, m.Len() == 5)
+	assertEqual(t, m.Len(), 5)
 
 	// keys
-	assert(t, len(m.Keys()) == 5)
-	assert(t, m.Keys()[0] == "a")
-	assert(t, m.Keys()[1] == "c")
-	assert(t, m.Keys()[2] == "d")
-	assert(t, m.Keys()[3] == "b")
-	assert(t, m.Keys()[4] == "e")
+	assertEqual(t, len(m.Keys()), 5)
+	assertEqual(t, strings.Join(m.Keys(), ","), "a,c,d,b,e")
 
 	// values
 	v, ok := m.Get("a")
 	assert(t, ok)
-	assert(t, v.(float64) == 1)
+	assertEqual(t, v.(float64), 1.)
 	v, ok = m.Get("c")
 	assert(t, ok)
-	assert(t, v.(float64) == 3)
+	assertEqual(t, v.(float64), 3.)
 	v, ok = m.Get("d")
 	assert(t, ok)
-	assert(t, v.(float64) == 4)
+	assertEqual(t, v.(float64), 4.)
 	v, ok = m.Get("b")
 	assert(t, ok)
-	assert(t, v.(float64) == 2)
+	assertEqual(t, v.(float64), 2.)
 	v, ok = m.Get("e")
 	assert(t, ok)
-	assert(t, v.(float64) == 5)
+	assertEqual(t, v.(float64), 5.)
 	v, ok = m.Get("f")
 	assert(t, !ok)
-	assert(t, v == nil)
+	assertEqual(t, v, nil)
 
 	// marshal
 	// data, err := json.Marshal(m)
-	// assert(t, err == nil)
-	// assert(t, string(data) == testData)
+	// assertEqual(t, err, nil)
+	// assertEqual(t, string(data), testData)
 }
 
-const testData = `{"a":1,"c":3,"d":4,"b":2,"e":5}`
+const (
+	testData = `{"a":1,"c":3,"d":4,"b":2,"e":5}`
+	subData  = `{"1":1,"c":null,"d":"dd","b":true,"e":[2,null,3.5,"zzz"],"f":{"a":1,"c":3,"d":4,"b":2,"e":5}}`
+)

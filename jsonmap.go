@@ -21,6 +21,13 @@ func (m *Map) Set(key Key, value Value) {
 	m.m[key] = value
 }
 
+// Same as Set, but pushes the key to the end of the keys slice
+func (m *Map) Push(key Key, value Value) {
+	m.Delete(key)
+	m.keys = append(m.keys, key)
+	m.m[key] = value
+}
+
 func (m *Map) Get(key string) (value any, ok bool) {
 	value, ok = m.m[key]
 	return
