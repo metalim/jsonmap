@@ -1,9 +1,12 @@
 # Ordered map
 
-Simple ordered map for Go, with JSON restrictions. The main purpose is to keep same order of keys after parsing JSON and generating it again.
+Simple ordered map for Go, with JSON restrictions. The main purpose is to keep same order of keys after parsing JSON and generating it again, so Unmarshal followed by Marshal generates exactly the same JSON structure
 
-Keys are strings, Values are any JSON values (float, string, boolean, null, array, map/object).
-Storage is O(N), operations are O(1), except Delete, which is O(N) time (can be reimplemented in O(log(N)) time with additional O(N) storage, or in O(1) time with more advanced data structures)
+Keys are strings, Values are any JSON values (float, string, boolean, null, array, map/object)
+
+Storage is O(N), operations are O(1), except Delete, which is O(N) time. Delete can be reimplemented in O(log(N)) time with additional O(N) storage, or in O(1) time with more complicated data structures, but let's keep it simple for now
+
+When Unmarshalling, **any nested map from JSON is created as ordered**, including maps in nested arrays
 
 Inspired by https://github.com/iancoleman/orderedmap
 
@@ -63,3 +66,10 @@ func main() {
 }
 
 ```
+
+## Alternatives
+
+* https://github.com/iancoleman/orderedmap — also has O(N) time for Delete, but my implementation is cleaner
+* https://github.com/wk8/go-ordered-map — has O(1) time for Delete due to linked list storage, but Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
+
+Let me know of other alternatives, I'll add them here
