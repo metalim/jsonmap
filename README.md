@@ -2,7 +2,7 @@
 
 Simple ordered map for Go, with JSON restrictions. The main purpose is to keep same order of keys after parsing JSON and generating it again, so Unmarshal followed by Marshal generates exactly the same JSON structure
 
-Keys are strings, Values are any JSON values (float, string, boolean, null, array, map/object)
+Keys are strings, Values are any JSON values (number, string, boolean, null, array, map/object)
 
 Storage is O(N), operations are O(1), except Delete, which is O(N) time. Delete can be reimplemented in O(log(N)) time with additional O(N) storage, or in O(1) time with more complicated data structures, but let's keep it simple for now
 
