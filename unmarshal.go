@@ -7,8 +7,8 @@ import (
 )
 
 func (m *Map) UnmarshalJSON(data []byte) error {
-	if m.m == nil {
-		m.m = make(map[string]any)
+	if m.values == nil {
+		m.values = make(map[string]any)
 	}
 
 	d := json.NewDecoder(bytes.NewReader(data))

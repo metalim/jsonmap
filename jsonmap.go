@@ -4,40 +4,40 @@ type Key = string
 type Value = any
 
 type Map struct {
-	m    map[Key]Value
-	keys []Key
+	values map[Key]Value
+	keys   []Key
 }
 
 func New() *Map {
 	return &Map{
-		m: make(map[Key]Value),
+		values: make(map[Key]Value),
 	}
 }
 
 func (m *Map) Set(key Key, value Value) {
-	if _, ok := m.m[key]; !ok {
+	if _, ok := m.values[key]; !ok {
 		m.keys = append(m.keys, key)
 	}
-	m.m[key] = value
+	m.values[key] = value
 }
 
-// Same as Set, but pushes the key to the end of the keys slice
+// Same as Set, but pushes the key to the end
 func (m *Map) Push(key Key, value Value) {
 	m.Delete(key)
 	m.keys = append(m.keys, key)
-	m.m[key] = value
+	m.values[key] = value
 }
 
 func (m *Map) Get(key string) (value any, ok bool) {
-	value, ok = m.m[key]
+	value, ok = m.values[key]
 	return
 }
 
 func (m *Map) Delete(key string) {
-	if _, ok := m.m[key]; !ok {
+	if _, ok := m.values[key]; !ok {
 		return
 	}
-	delete(m.m, key)
+	delete(m.values, key)
 	i := m.IndexKey(key)
 	m.keys = append(m.keys[:i], m.keys[i+1:]...)
 }
@@ -54,7 +54,7 @@ func (m *Map) IndexKey(key string) int {
 }
 
 func (m *Map) Len() int {
-	return len(m.m)
+	return len(m.values)
 }
 
 func (m *Map) Keys() []string {

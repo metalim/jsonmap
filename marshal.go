@@ -16,7 +16,7 @@ func (m *Map) MarshalJSON() ([]byte, error) {
 		buf.WriteByte('"')
 		buf.WriteString(key)
 		buf.WriteString(`":`)
-		if err := enc.Encode(m.m[key]); err != nil {
+		if err := enc.Encode(m.values[key]); err != nil {
 			return nil, err
 		}
 	}
