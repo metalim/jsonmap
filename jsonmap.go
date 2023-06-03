@@ -55,6 +55,10 @@ func (m *Map) Last() *Element {
 	return m.last
 }
 
+func (m *Map) GetElement(key string) *Element {
+	return m.elements[key]
+}
+
 func (m *Map) Get(key string) (value any, ok bool) {
 	elem, ok := m.elements[key]
 	if !ok {

@@ -6,7 +6,7 @@ func (m *Map) Delete(key string) {
 		return
 	}
 	delete(m.values, key)
-	i := m.IndexKey(key)
+	i := m.KeyIndex(key)
 	m.keys = append(m.keys[:i], m.keys[i+1:]...)
 }
 
@@ -38,7 +38,7 @@ func (m *Map) PushFront(key Key, value Value) {
 }
 
 // O(n)
-func (m *Map) IndexKey(key string) int {
+func (m *Map) KeyIndex(key string) int {
 	for i, k := range m.keys {
 		if k == key {
 			return i
@@ -54,4 +54,15 @@ func (m *Map) Values() []Value {
 		values[i] = m.values[k]
 	}
 	return values
+}
+
+// O(n) for existing keys, because it uses KeyIndex()
+func (m *Map) GetElement(key Key) *Element {
+	if _, ok := m.values[key]; !ok {
+		return nil
+	}
+	return &Element{
+		m:     m,
+		index: m.KeyIndex(key),
+	}
 }
