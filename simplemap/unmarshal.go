@@ -7,6 +7,10 @@ import (
 )
 
 func (m *Map) UnmarshalJSON(data []byte) error {
+	if m.values == nil {
+		m.values = make(map[string]any)
+	}
+
 	d := json.NewDecoder(bytes.NewReader(data))
 	tok, err := d.Token()
 	if err != nil {

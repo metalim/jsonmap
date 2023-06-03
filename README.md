@@ -6,11 +6,11 @@ Simple ordered map for Go, with JSON restrictions. The main purpose is to keep s
 
 Keys are strings, Values are any JSON values (number, string, boolean, null, array, map/object)
 
-Storage is O(N), operations are O(1), except Delete, which is O(N) time. Delete can be reimplemented in O(log(N)) time with additional O(N) storage, or in O(1) time with more complicated data structures, but let's keep it simple for now
+Storage is O(n), operations are O(1), except for optional ones that are in [slow.go](slow.go) file
 
 When Unmarshalling, **any nested map from JSON is created as ordered**, including maps in nested arrays
 
-Inspired by https://github.com/iancoleman/orderedmap
+Inspired by https://github.com/wk8/go-ordered-map and https://github.com/iancoleman/orderedmap
 
 ## Usage
 
@@ -21,10 +21,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/metalim/jsonmap"
+	jsonmap "github.com/metalim/jsonmap"
+	// simpler alternative, but with O(n) Delete()
+	// jsonmap "github.com/metalim/jsonmap/simplemap"
 )
 
-const input = `{"an":"article","empty":null,"sub":{"x":1,"y":2},"bool":false,"array":[1,2,3]}`
+const input = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
 
 func main() {
 	m := jsonmap.New()
@@ -35,9 +37,13 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(m.Keys())         // [an empty sub bool array]
 	fmt.Println(m.Get("an"))      // article true
 	fmt.Println(m.Get("nothing")) // <nil> false
+
+	// iterate
+	for el := m.First(); el != nil; el = el.Next() {
+		fmt.Println(el.Key(), el.Value())
+	}
 
 	// marshal, keeping order
 	output, err := json.Marshal(&m)
@@ -66,12 +72,11 @@ func main() {
 	}
 	fmt.Println(string(data)) // {"empty":null,"bool":false,"array":[1,2,3],"truth":true,"an":false}
 }
-
 ```
 
 ## Alternatives
 
-* https://github.com/iancoleman/orderedmap — also has O(N) time for Delete, but my implementation is cleaner
-* https://github.com/wk8/go-ordered-map — has O(1) time for Delete due to linked list storage, but Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
+* https://github.com/iancoleman/orderedmap — has O(n) time for Delete
+* https://github.com/wk8/go-ordered-map — Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
 
 Let me know of other alternatives, I'll add them here

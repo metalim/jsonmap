@@ -3,60 +3,111 @@ package jsonmap
 type Key = string
 type Value = any
 
+type Element struct {
+	key   Key
+	value Value
+
+	next, prev *Element
+}
+
+func (e *Element) Key() Key {
+	return e.key
+}
+
+func (e *Element) Value() Value {
+	return e.value
+}
+
+func (e *Element) Next() *Element {
+	return e.next
+}
+
+func (e *Element) Prev() *Element {
+	return e.prev
+}
+
 type Map struct {
-	values map[Key]Value
-	keys   []Key
+	elements    map[Key]*Element
+	first, last *Element
 }
 
 func New() *Map {
 	return &Map{
-		values: make(map[Key]Value),
+		elements: make(map[Key]*Element),
 	}
 }
 
-func (m *Map) Set(key Key, value Value) {
-	if _, ok := m.values[key]; !ok {
-		m.keys = append(m.keys, key)
-	}
-	m.values[key] = value
-}
-
-// Same as Set, but pushes the key to the end
-func (m *Map) Push(key Key, value Value) {
-	m.Delete(key)
-	m.keys = append(m.keys, key)
-	m.values[key] = value
-}
-
-func (m *Map) Get(key string) (value any, ok bool) {
-	value, ok = m.values[key]
-	return
-}
-
-func (m *Map) Delete(key string) {
-	if _, ok := m.values[key]; !ok {
-		return
-	}
-	delete(m.values, key)
-	i := m.IndexKey(key)
-	m.keys = append(m.keys[:i], m.keys[i+1:]...)
-}
-
-// with additional O(n) memory this can be done in O(log n) via binary search,
-// or even O(1) via more advanced data structures. But lets keep it simple for now
-func (m *Map) IndexKey(key string) int {
-	for i, k := range m.keys {
-		if k == key {
-			return i
-		}
-	}
-	return -1
+func (m *Map) Clear() {
+	m.elements = make(map[Key]*Element)
+	m.first = nil
+	m.last = nil
 }
 
 func (m *Map) Len() int {
-	return len(m.values)
+	return len(m.elements)
 }
 
-func (m *Map) Keys() []string {
-	return m.keys
+func (m *Map) First() *Element {
+	return m.first
+}
+
+func (m *Map) Last() *Element {
+	return m.last
+}
+
+func (m *Map) Get(key string) (value any, ok bool) {
+	elem, ok := m.elements[key]
+	if !ok {
+		return
+	}
+	return elem.value, true
+}
+
+func (m *Map) Set(key Key, value Value) {
+	if elem, ok := m.elements[key]; ok {
+		elem.value = value
+		return
+	}
+	elem := &Element{
+		key:   key,
+		value: value,
+	}
+	m.elements[key] = elem
+	if m.last == nil {
+		m.first = elem
+		m.last = elem
+		return
+	}
+	m.last.next = elem
+	elem.prev = m.last
+	m.last = elem
+}
+
+func (m *Map) Delete(key string) {
+	elem, ok := m.elements[key]
+	if !ok {
+		return
+	}
+	if elem.prev == nil {
+		m.first = elem.next
+	} else {
+		elem.prev.next = elem.next
+	}
+	if elem.next == nil {
+		m.last = elem.prev
+	} else {
+		elem.next.prev = elem.prev
+	}
+	delete(m.elements, key)
+}
+
+func (m *Map) Push(key Key, value Value) {
+	m.Delete(key)
+	m.Set(key, value)
+}
+
+func (m *Map) Merge(other *Map) {
+	for elem := other.First(); elem != nil; elem = elem.Next() {
+		m.Set(elem.key, elem.value)
+	}
 }

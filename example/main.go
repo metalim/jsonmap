@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/metalim/jsonmap"
+	jsonmap "github.com/metalim/jsonmap"
+	// simpler alternative, but with O(n) Delete()
+	// jsonmap "github.com/metalim/jsonmap/simplemap"
 )
 
-const input = `{"an":"article","empty":null,"sub":{"x":1,"y":2},"bool":false,"array":[1,2,3]}`
+const input = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
 
 func main() {
 	m := jsonmap.New()
@@ -18,9 +20,13 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(m.Keys())         // [an empty sub bool array]
 	fmt.Println(m.Get("an"))      // article true
 	fmt.Println(m.Get("nothing")) // <nil> false
+
+	// iterate
+	for el := m.First(); el != nil; el = el.Next() {
+		fmt.Println(el.Key(), el.Value())
+	}
 
 	// marshal, keeping order
 	output, err := json.Marshal(&m)
