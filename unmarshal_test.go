@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/metalim/jsonmap"
+	jsonmap "github.com/metalim/jsonmap/jsonmap5"
 )
 
 func TestSimpleJSON(t *testing.T) {

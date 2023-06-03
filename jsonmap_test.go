@@ -3,7 +3,7 @@ package jsonmap_test
 import (
 	"testing"
 
-	"github.com/metalim/jsonmap"
+	jsonmap "github.com/metalim/jsonmap/jsonmap5"
 )
 
 func TestJSONMap(t *testing.T) {
