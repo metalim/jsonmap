@@ -6,11 +6,13 @@ Simple ordered map for Go, with JSON restrictions. The main purpose is to keep s
 
 Keys are strings, Values are any JSON values (number, string, boolean, null, array, map/object)
 
-Storage is O(n), operations are O(1), except for optional ones that are in [slow.go](slow.go) file
+Storage is O(n), operations are O(1), except for optional operations in [slow.go](slow.go) file
 
 When Unmarshalling, **any nested map from JSON is created as ordered**, including maps in nested arrays
 
-Inspired by https://github.com/wk8/go-ordered-map and https://github.com/iancoleman/orderedmap
+Alternative implementation is in [simplemap](simplemap), it has simple structure, O(1) Keys, but O(n) Delete operation. Check the difference by running `go test -v -bench=. -benchmem`
+
+Inspired by [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) and [iancoleman/orderedmap](https://github.com/iancoleman/orderedmap)
 
 ## Usage
 
@@ -99,7 +101,7 @@ func main() {
 
 ## Alternatives
 
-* https://github.com/iancoleman/orderedmap — has O(n) time for Delete
-* https://github.com/wk8/go-ordered-map — Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
+* [iancoleman/orderedmap](https://github.com/iancoleman/orderedmap) — has O(n) time for Delete
+* [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) — Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
 
 Let me know of other alternatives, I'll add them here
