@@ -46,9 +46,9 @@ func setupMap[T Map](b *testing.B, new func() T) (T, string) {
 	keys := sb.String()
 
 	m := new()
-	rand.Seed(1)
+	r := rand.New(rand.NewSource(1))
 	for j := 0; j < PREPARE_KEYS; j++ {
-		index := rand.Intn(PREPARE_KEYS)
+		index := r.Intn(PREPARE_KEYS)
 		m.Set(keys[index:index+KEY_LEN], j)
 	}
 
