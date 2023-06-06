@@ -3,6 +3,7 @@ package jsonmap_test
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"testing"
 
 	"github.com/metalim/jsonmap"
@@ -10,13 +11,16 @@ import (
 )
 
 const (
-	PREPARE_KEYS = 1e7
-	SET_KEYS     = 1e5
-	DELETE_KEYS  = 1e4
-	GET_KEYS     = 1e5
+	SET_KEYS    = 1e5
+	DELETE_KEYS = 1e4
+	GET_KEYS    = 1e5
+
+	PREPARE_KEYS  = 1e7
+	KEY_LEN       = 10
+	LOG_KEY_STATS = true
 )
 
-func benchmarkMap[T Map](b *testing.B, new func() T) {
+func benchmarkSuite[T Map](b *testing.B, new func() T) {
 	for i := 0; i < b.N; i++ {
 		m := new()
 		for j := 0; j < SET_KEYS; j++ {
@@ -31,41 +35,103 @@ func benchmarkMap[T Map](b *testing.B, new func() T) {
 	}
 }
 
-func setupMap[T Map](b *testing.B, new func() T) (T, []string) {
-	m := new()
-	keys := make([]string, PREPARE_KEYS)
-	for j := 0; j < PREPARE_KEYS; j++ {
-		keys[j] = fmt.Sprintf("key%d", j)
-		m.Set(keys[j], j)
+func setupMap[T Map](b *testing.B, new func() T) (T, string) {
+	const symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
+
+	// single string for fast keys access
+	var sb strings.Builder
+	for j := 0; j < PREPARE_KEYS+KEY_LEN; j++ {
+		sb.WriteByte(symbols[rand.Intn(len(symbols))])
 	}
-	rand.Shuffle(len(keys), func(i, j int) {
-		keys[i], keys[j] = keys[j], keys[i]
+	keys := sb.String()
+
+	keysPrep := make([]string, PREPARE_KEYS)
+	for j := 0; j < PREPARE_KEYS; j++ {
+		keysPrep[j] = keys[j : j+KEY_LEN]
+	}
+	rand.Shuffle(len(keysPrep), func(i, j int) {
+		keysPrep[i], keysPrep[j] = keysPrep[j], keysPrep[i]
 	})
+
+	m := new()
+	for j := 0; j < PREPARE_KEYS; j++ {
+		m.Set(keysPrep[j], j)
+	}
+
 	return m, keys
 }
 
-func benchmarkMapGet(b *testing.B, m Map, keys []string) {
+func benchmarkMapGet(b *testing.B, m Map, keys string) {
+	var new, existing int
 	for i := 0; i < b.N; i++ {
-		m.Get(keys[i%len(keys)])
+		_, ok := m.Get(keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN])
+		if LOG_KEY_STATS {
+			if ok {
+				existing++
+			} else {
+				new++
+			}
+		}
+	}
+	if LOG_KEY_STATS {
+		b.Logf("N: %d, new: %d, existing: %d", b.N, new, existing)
 	}
 }
-func benchmarkMapSetExisting(b *testing.B, m Map, keys []string) {
+
+func benchmarkMapSetExisting(b *testing.B, m Map, keys string) {
+	var new, existing int
 	for i := 0; i < b.N; i++ {
-		m.Set(keys[i%len(keys)], i)
+		key := keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN]
+		if LOG_KEY_STATS {
+			_, ok := m.Get(key)
+			if ok {
+				existing++
+			} else {
+				new++
+			}
+		}
+		m.Set(key, i)
+	}
+	if LOG_KEY_STATS {
+		b.Logf("N: %d, new: %d, existing: %d", b.N, new, existing)
 	}
 }
-func benchmarkMapSetNew(b *testing.B, m Map, keys []string) {
-	for i, k := range keys {
-		keys[i] = k + "x"
-	}
-	b.ResetTimer()
+
+func benchmarkMapSetNew(b *testing.B, m Map, keys string) {
+	var new, existing int
 	for i := 0; i < b.N; i++ {
-		m.Set(keys[i%len(keys)], i)
+		key := keys[i%PREPARE_KEYS+1 : i%PREPARE_KEYS+KEY_LEN]
+		if LOG_KEY_STATS {
+			_, ok := m.Get(key)
+			if ok {
+				existing++
+			} else {
+				new++
+			}
+		}
+		m.Set(key, i)
+	}
+	if LOG_KEY_STATS {
+		b.Logf("N: %d, new: %d, existing: %d", b.N, new, existing)
 	}
 }
-func benchmarkMapDelete(b *testing.B, m Map, keys []string) {
+
+func benchmarkMapDelete(b *testing.B, m Map, keys string) {
+	var new, existing int
 	for i := 0; i < b.N; i++ {
-		m.Delete(keys[i%len(keys)])
+		key := keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN]
+		if LOG_KEY_STATS {
+			_, ok := m.Get(key)
+			if ok {
+				existing++
+			} else {
+				new++
+			}
+		}
+		m.Delete(key)
+	}
+	if LOG_KEY_STATS {
+		b.Logf("N: %d, new: %d, existing: %d", b.N, new, existing)
 	}
 }
 
@@ -77,9 +143,9 @@ var mapDefs = []struct {
 	{"simplemap", func() Map { return simplemap.New() }},
 }
 
-var benchDefs = []struct {
-	name  string
-	bench func(*testing.B, Map, []string)
+var ops = []struct {
+	name      string
+	benchmark func(*testing.B, Map, string)
 }{
 	{"Get", benchmarkMapGet},
 	{"SetExisting", benchmarkMapSetExisting},
@@ -87,23 +153,26 @@ var benchDefs = []struct {
 	{"Delete", benchmarkMapDelete},
 }
 
-func BenchmarkMap(b *testing.B) {
-	benchmarkMap(b, jsonmap.New)
-}
-func BenchmarkSimpleMap(b *testing.B) {
-	benchmarkMap(b, simplemap.New)
-}
+func Benchmark(b *testing.B) {
+	b.Run("Suite", func(b *testing.B) {
+		for _, mapDef := range mapDefs {
+			b.Run(mapDef.name, func(b *testing.B) {
+				benchmarkSuite(b, mapDef.new)
+			})
+		}
+	})
 
-func BenchmarkMapOps(b *testing.B) {
-	for _, benchDef := range benchDefs {
-		b.Run(benchDef.name, func(b *testing.B) {
-			for _, def := range mapDefs {
-				b.Run(def.name, func(b *testing.B) {
-					m, keys := setupMap(b, def.new)
-					b.ResetTimer()
-					benchDef.bench(b, m, keys)
-				})
-			}
-		})
-	}
+	b.Run("Ops", func(b *testing.B) {
+		for _, op := range ops {
+			b.Run(op.name, func(b *testing.B) {
+				for _, def := range mapDefs {
+					b.Run(def.name, func(b *testing.B) {
+						m, keys := setupMap(b, def.new)
+						b.ResetTimer()
+						op.benchmark(b, m, keys)
+					})
+				}
+			})
+		}
+	})
 }
