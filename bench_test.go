@@ -45,17 +45,11 @@ func setupMap[T Map](b *testing.B, new func() T) (T, string) {
 	}
 	keys := sb.String()
 
-	keysPrep := make([]string, PREPARE_KEYS)
-	for j := 0; j < PREPARE_KEYS; j++ {
-		keysPrep[j] = keys[j : j+KEY_LEN]
-	}
-	rand.Shuffle(len(keysPrep), func(i, j int) {
-		keysPrep[i], keysPrep[j] = keysPrep[j], keysPrep[i]
-	})
-
 	m := new()
+	rand.Seed(1)
 	for j := 0; j < PREPARE_KEYS; j++ {
-		m.Set(keysPrep[j], j)
+		index := rand.Intn(PREPARE_KEYS)
+		m.Set(keys[index:index+KEY_LEN], j)
 	}
 
 	return m, keys
