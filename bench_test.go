@@ -37,16 +37,16 @@ func benchmarkSuite[T Map](b *testing.B, new func() T) {
 
 func setupMap[T Map](b *testing.B, new func() T) (T, string) {
 	const symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
+	r := rand.New(rand.NewSource(1))
 
 	// single string for fast keys access
 	var sb strings.Builder
 	for j := 0; j < PREPARE_KEYS+KEY_LEN; j++ {
-		sb.WriteByte(symbols[rand.Intn(len(symbols))])
+		sb.WriteByte(symbols[r.Intn(len(symbols))])
 	}
 	keys := sb.String()
 
 	m := new()
-	r := rand.New(rand.NewSource(1))
 	for j := 0; j < PREPARE_KEYS; j++ {
 		index := r.Intn(PREPARE_KEYS)
 		m.Set(keys[index:index+KEY_LEN], j)
