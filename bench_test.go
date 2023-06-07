@@ -11,6 +11,8 @@ import (
 )
 
 const (
+	BENCHMARK_SIMPLEMAP = true
+
 	SET_KEYS    = 1e5
 	DELETE_KEYS = 1e4
 	GET_KEYS    = 1e5
@@ -129,12 +131,19 @@ func benchmarkMapDelete(b *testing.B, m Map, keys string) {
 	}
 }
 
-var mapDefs = []struct {
+type mapDef struct {
 	name string
 	new  func() Map
-}{
+}
+
+var mapDefs = []mapDef{
 	{"jsonmap", func() Map { return jsonmap.New() }},
-	{"simplemap", func() Map { return simplemap.New() }},
+}
+
+func init() {
+	if BENCHMARK_SIMPLEMAP {
+		mapDefs = append(mapDefs, mapDef{"simplemap", func() Map { return simplemap.New() }})
+	}
 }
 
 var ops = []struct {
