@@ -67,6 +67,15 @@ func (m *Map) Get(key string) (value any, ok bool) {
 	return elem.value, true
 }
 
+func GetAs[T any](m *Map, key string) (value T, ok bool) {
+	elem, ok := m.elements[key]
+	if !ok {
+		return
+	}
+	value, ok = elem.value.(T)
+	return
+}
+
 func (m *Map) Set(key Key, value Value) {
 	if elem, ok := m.elements[key]; ok {
 		elem.value = value
