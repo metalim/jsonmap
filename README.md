@@ -1,6 +1,6 @@
 # Ordered map
 
-![go test workflow](https://github.com/metalim/jsonmap/actions/workflows/gotest.yml/badge.svg)
+[![go test workflow](https://github.com/metalim/jsonmap/actions/workflows/gotest.yml/badge.svg)](https://github.com/metalim/jsonmap/actions/workflows/gotest.yml)
 
 Simple ordered map for Go, with JSON restrictions. The main purpose is to keep same order of keys after parsing JSON and generating it again, so Unmarshal followed by Marshal generates exactly the same JSON structure
 
