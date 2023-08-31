@@ -12,6 +12,7 @@ import (
 
 const (
 	BENCHMARK_SIMPLEMAP = true
+	BENCHMARK_GOMAP     = true
 
 	SET_KEYS    = 1e5
 	DELETE_KEYS = 1e4
@@ -19,7 +20,7 @@ const (
 
 	PREPARE_KEYS  = 1e7
 	KEY_LEN       = 10
-	LOG_KEY_STATS = true
+	LOG_KEY_STATS = false
 )
 
 func benchmarkSuite[T Map](b *testing.B, new func() T) {
@@ -144,6 +145,9 @@ func init() {
 	if BENCHMARK_SIMPLEMAP {
 		mapDefs = append(mapDefs, mapDef{"simplemap", func() Map { return simplemap.New() }})
 	}
+	if BENCHMARK_GOMAP {
+		mapDefs = append(mapDefs, mapDef{"gomap", func() Map { return GoMap{} }})
+	}
 }
 
 var ops = []struct {
@@ -178,4 +182,19 @@ func Benchmark(b *testing.B) {
 			})
 		}
 	})
+}
+
+// to compare map[string]any with jsonmap
+type GoMap map[string]any
+
+func (m GoMap) Len() int                 { return len(m) }
+func (m GoMap) Set(k string, v any)      { m[k] = v }
+func (m GoMap) Get(k string) (any, bool) { v, ok := m[k]; return v, ok }
+func (m GoMap) Delete(k string)          { delete(m, k) }
+func (m GoMap) Keys() []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
 }
