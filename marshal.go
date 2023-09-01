@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 )
 
+// MarshalJSON implements json.Marshaler interface.
+// It marshals the map into JSON object.
+//
+//	data, err := json.Marshal(m)
 func (m *Map) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	buf.WriteByte('{')

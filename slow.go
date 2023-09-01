@@ -4,9 +4,11 @@ import "sort"
 
 // KeyIndex returns index of key. O(n) time.
 // If key is not in the map, it returns -1.
+// O(n) time if the key exists.
+// O(1) time if the key does not exist.
 //
 //	i := m.KeyIndex(key)
-func (m *Map) KeyIndex(key string) int {
+func (m *Map) KeyIndex(key Key) int {
 	elem, ok := m.elements[key]
 	if !ok {
 		return -1
@@ -18,7 +20,7 @@ func (m *Map) KeyIndex(key string) int {
 	return i
 }
 
-// Keys returns all keys in the map. O(n) time and O(n) space.
+// Keys returns all keys in the map. O(n) time and space.
 //
 //	keys := m.Keys()
 func (m *Map) Keys() []Key {
@@ -29,7 +31,7 @@ func (m *Map) Keys() []Key {
 	return keys
 }
 
-// Values returns all values in the map. O(n) time and O(n) space.
+// Values returns all values in the map. O(n) time and space.
 //
 //	values := m.Values()
 func (m *Map) Values() []Value {
@@ -41,6 +43,7 @@ func (m *Map) Values() []Value {
 }
 
 // SortKeys sorts keys in the map. O(n*log(n)) time, O(n) space.
+// O(n*log(n)) time, O(n) space.
 //
 //	m.SortKeys(func(a, b Key) bool {
 //		return a < b
@@ -49,7 +52,7 @@ func (m *Map) SortKeys(less func(a, b Key) bool) {
 	if m.Len() < 2 {
 		return
 	}
-	elements := make([]*Element, 0, len(m.elements))
+	elements := make([]*element, 0, len(m.elements))
 	for elem := m.first; elem != nil; elem = elem.next {
 		elements = append(elements, elem)
 	}

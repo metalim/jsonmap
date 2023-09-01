@@ -6,6 +6,13 @@ import (
 	"errors"
 )
 
+// UnmarshalJSON implements json.Unmarshaler interface.
+// It supports nested maps and arrays.
+//
+// Note: it does not clear the map before unmarshaling.
+// If you want to clear it, call Clear() before UnmarshalJSON().
+//
+//	err := m.UnmarshalJSON([]byte(`{"a":1,"b":2}`))
 func (m *Map) UnmarshalJSON(data []byte) error {
 	if m.values == nil {
 		m.values = make(map[string]any)

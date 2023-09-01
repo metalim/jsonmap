@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// String returns a string representation of the map. O(n) time.
 func (m *Map) String() string {
 	var b strings.Builder
 	b.WriteString(`map[`)

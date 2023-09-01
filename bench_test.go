@@ -23,7 +23,7 @@ const (
 	LOG_KEY_STATS = false
 )
 
-func benchmarkSuite[T Map](b *testing.B, new func() T) {
+func benchmarkSuite[T IMapShort](b *testing.B, new func() T) {
 	for i := 0; i < b.N; i++ {
 		m := new()
 		for j := 0; j < SET_KEYS; j++ {
@@ -38,7 +38,7 @@ func benchmarkSuite[T Map](b *testing.B, new func() T) {
 	}
 }
 
-func setupMap[T Map](b *testing.B, new func() T) (T, string) {
+func setupMap[T IMapShort](b *testing.B, new func() T) (T, string) {
 	const symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 	r := rand.New(rand.NewSource(1))
 
@@ -58,7 +58,7 @@ func setupMap[T Map](b *testing.B, new func() T) (T, string) {
 	return m, keys
 }
 
-func benchmarkMapGet(b *testing.B, m Map, keys string) {
+func benchmarkMapGet(b *testing.B, m IMapShort, keys string) {
 	var new, existing int
 	for i := 0; i < b.N; i++ {
 		_, ok := m.Get(keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN])
@@ -75,7 +75,7 @@ func benchmarkMapGet(b *testing.B, m Map, keys string) {
 	}
 }
 
-func benchmarkMapSetExisting(b *testing.B, m Map, keys string) {
+func benchmarkMapSetExisting(b *testing.B, m IMapShort, keys string) {
 	var new, existing int
 	for i := 0; i < b.N; i++ {
 		key := keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN]
@@ -94,7 +94,7 @@ func benchmarkMapSetExisting(b *testing.B, m Map, keys string) {
 	}
 }
 
-func benchmarkMapSetNew(b *testing.B, m Map, keys string) {
+func benchmarkMapSetNew(b *testing.B, m IMapShort, keys string) {
 	var new, existing int
 	for i := 0; i < b.N; i++ {
 		key := keys[i%PREPARE_KEYS+1 : i%PREPARE_KEYS+KEY_LEN]
@@ -113,7 +113,7 @@ func benchmarkMapSetNew(b *testing.B, m Map, keys string) {
 	}
 }
 
-func benchmarkMapDelete(b *testing.B, m Map, keys string) {
+func benchmarkMapDelete(b *testing.B, m IMapShort, keys string) {
 	var new, existing int
 	for i := 0; i < b.N; i++ {
 		key := keys[i%PREPARE_KEYS : i%PREPARE_KEYS+KEY_LEN]
@@ -134,25 +134,25 @@ func benchmarkMapDelete(b *testing.B, m Map, keys string) {
 
 type mapDef struct {
 	name string
-	new  func() Map
+	new  func() IMapShort
 }
 
 var mapDefs = []mapDef{
-	{"jsonmap", func() Map { return jsonmap.New() }},
+	{"jsonmap", func() IMapShort { return jsonmap.New() }},
 }
 
 func init() {
 	if BENCHMARK_SIMPLEMAP {
-		mapDefs = append(mapDefs, mapDef{"simplemap", func() Map { return simplemap.New() }})
+		mapDefs = append(mapDefs, mapDef{"simplemap", func() IMapShort { return simplemap.New() }})
 	}
 	if BENCHMARK_GOMAP {
-		mapDefs = append(mapDefs, mapDef{"gomap", func() Map { return GoMap{} }})
+		mapDefs = append(mapDefs, mapDef{"gomap", func() IMapShort { return GoMap{} }})
 	}
 }
 
 var ops = []struct {
 	name      string
-	benchmark func(*testing.B, Map, string)
+	benchmark func(*testing.B, IMapShort, string)
 }{
 	{"Get", benchmarkMapGet},
 	{"SetExisting", benchmarkMapSetExisting},

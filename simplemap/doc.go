@@ -12,7 +12,7 @@
 //	|           |             |             |
 //	| First     | O(1)        | O(1)        |
 //	| Last      | O(1)        | O(1)        |
-//	| GetElement| O(1)        | O(1)        |
+//	| GetElement| O(1)        | __O(N)__    |
 //	| el.Next   | O(1)        | O(1)        |
 //	| el.Prev   | O(1)        | O(1)        |
 //	|           |             |             |

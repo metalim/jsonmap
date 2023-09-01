@@ -15,12 +15,12 @@ const (
 	nestedJSON      = `{"1":1,"c":null,"d":"dd","b":true,"e":[2,null,{"x":1,"z":3,"y":2},"zzz"],"f":{"a":1,"c":3,"d":4,"b":2,"e":5}}`
 )
 
-type Map interface {
+type IMapShort interface {
 	Len() int
-	Set(key string, value any)
-	Get(key string) (value any, ok bool)
-	Delete(key string)
-	Keys() []string
+	Set(key Key, value Value)
+	Get(key Key) (value Value, ok bool)
+	Delete(key Key)
+	Keys() []Key
 }
 
 func TestFastMap(t *testing.T) {
@@ -31,7 +31,7 @@ func TestSimpleMap(t *testing.T) {
 	testMap(t, simplemap.New)
 }
 
-func testMap[T Map](t *testing.T, new func() T) {
+func testMap[T IMapShort](t *testing.T, new func() T) {
 	t.Run("PlainJSON", func(t *testing.T) {
 		// due to random nature of Go map iteration, we need to test it many times
 		for i := 0; i < TEST_ITERATIONS; i++ {
@@ -49,7 +49,7 @@ func testMap[T Map](t *testing.T, new func() T) {
 	})
 }
 
-func testSerialization(t *testing.T, testData string, m Map) {
+func testSerialization(t *testing.T, testData string, m IMapShort) {
 	err := json.Unmarshal([]byte(testData), &m)
 	assertEqual(t, err, nil)
 
@@ -58,7 +58,7 @@ func testSerialization(t *testing.T, testData string, m Map) {
 	assertEqual(t, string(data), testData)
 }
 
-func verifyPlainJSON(t *testing.T, m Map) {
+func verifyPlainJSON(t *testing.T, m IMapShort) {
 	assertEqual(t, m.Len(), 5)
 
 	// keys

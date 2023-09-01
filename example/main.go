@@ -9,13 +9,13 @@ import (
 	// jsonmap "github.com/metalim/jsonmap/simplemap"
 )
 
-const input = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
+const sampleJSON = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
 
 func main() {
 	m := jsonmap.New()
 
 	// unmarshal, keeping order
-	err := json.Unmarshal([]byte(input), &m)
+	err := json.Unmarshal([]byte(sampleJSON), &m)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	if string(output) == input {
+	if string(output) == sampleJSON {
 		fmt.Println("output == input")
 	}
 
