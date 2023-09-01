@@ -1,6 +1,7 @@
 # Ordered map
 
 [![go test workflow](https://github.com/metalim/jsonmap/actions/workflows/gotest.yml/badge.svg)](https://github.com/metalim/jsonmap/actions/workflows/gotest.yml)
+[![go report](https://goreportcard.com/badge/github.com/metalim/jsonmap)](https://goreportcard.com/report/github.com/metalim/jsonmap)
 [![go doc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/metalim/jsonmap)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/mit/)
 
