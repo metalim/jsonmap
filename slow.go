@@ -2,7 +2,10 @@ package jsonmap
 
 import "sort"
 
-// O(n)
+// KeyIndex returns index of key. O(n) time.
+// If key is not in the map, it returns -1.
+//
+//	i := m.KeyIndex(key)
 func (m *Map) KeyIndex(key string) int {
 	elem, ok := m.elements[key]
 	if !ok {
@@ -15,7 +18,9 @@ func (m *Map) KeyIndex(key string) int {
 	return i
 }
 
-// O(n)
+// Keys returns all keys in the map. O(n) time and O(n) space.
+//
+//	keys := m.Keys()
 func (m *Map) Keys() []Key {
 	keys := make([]Key, 0, len(m.elements))
 	for elem := m.first; elem != nil; elem = elem.next {
@@ -24,7 +29,9 @@ func (m *Map) Keys() []Key {
 	return keys
 }
 
-// O(n)
+// Values returns all values in the map. O(n) time and O(n) space.
+//
+//	values := m.Values()
 func (m *Map) Values() []Value {
 	values := make([]Value, 0, len(m.elements))
 	for elem := m.first; elem != nil; elem = elem.next {
@@ -33,27 +40,20 @@ func (m *Map) Values() []Value {
 	return values
 }
 
-// O(n)
-func (m *Map) Elements() []*Element {
-	elements := make([]*Element, 0, len(m.elements))
-	for elem := m.first; elem != nil; elem = elem.next {
-		elements = append(elements, elem)
-	}
-	return elements
-}
-
-// O(n log n)
+// SortKeys sorts keys in the map. O(n*log(n)) time, O(n) space.
+//
+//	m.SortKeys(func(a, b Key) bool {
+//		return a < b
+//	})
 func (m *Map) SortKeys(less func(a, b Key) bool) {
-	if m.first == nil {
-		return
-	}
-	if m.first == m.last {
+	if m.Len() < 2 {
 		return
 	}
 	elements := make([]*Element, 0, len(m.elements))
 	for elem := m.first; elem != nil; elem = elem.next {
 		elements = append(elements, elem)
 	}
+
 	sort.Slice(elements, func(i, j int) bool {
 		return less(elements[i].key, elements[j].key)
 	})
@@ -62,12 +62,5 @@ func (m *Map) SortKeys(less func(a, b Key) bool) {
 	for i := 0; i < len(elements)-1; i++ {
 		elements[i].next = elements[i+1]
 		elements[i+1].prev = elements[i]
-	}
-}
-
-// optional, as it can't be stopped
-func (m *Map) ForEach(f func(key Key, value Value)) {
-	for elem := m.first; elem != nil; elem = elem.next {
-		f(elem.key, elem.value)
 	}
 }

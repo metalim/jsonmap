@@ -1,5 +1,8 @@
 package jsonmap
 
+// SetFront sets the value for the key.
+// If key is already in the map, it replaces the value, but keeps the original order of the element.
+// If key is not in the map, it adds the element to the front of the map.
 func (m *Map) SetFront(key Key, value Value) {
 	if elem, ok := m.elements[key]; ok {
 		elem.value = value
@@ -20,7 +23,20 @@ func (m *Map) SetFront(key Key, value Value) {
 	m.first = elem
 }
 
+// PushFront is same as SetFront, but moves the element to the front of the map, as if it was just added.
 func (m *Map) PushFront(key Key, value Value) {
 	m.Delete(key)
 	m.SetFront(key, value)
+}
+
+// PopFront removes the first element from the map and returns its key and value.
+func (m *Map) PopFront() (key Key, value Value, ok bool) {
+	if m.first == nil {
+		return // ok=false
+	}
+	key = m.first.key
+	value = m.first.value
+	ok = true
+	m.Delete(key)
+	return
 }

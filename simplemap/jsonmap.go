@@ -38,9 +38,3 @@ func (m *Map) Set(key Key, value Value) {
 func (m *Map) Keys() []string {
 	return m.keys
 }
-
-func (m *Map) Merge(other *Map) {
-	for _, k := range other.keys {
-		m.Set(k, other.values[k])
-	}
-}

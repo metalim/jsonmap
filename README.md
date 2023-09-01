@@ -8,11 +8,49 @@ Keys are strings, Values are any JSON values (number, string, boolean, null, arr
 
 Storage is O(n), operations are O(1), except for optional operations in [slow.go](slow.go) file
 
-When Unmarshalling, **any nested map from JSON is created as ordered**, including maps in nested arrays
+When Unmarshalling, **any nested map from JSON is created as ordered jsonmap**, including maps in nested arrays
 
-Alternative implementation is in [simplemap](simplemap), it has simple structure, O(1) Keys, but O(n) Delete operation. Check the difference by running `go test -v -bench=. -benchmem`
+Alternative implementation is in [simplemap](simplemap), it has simple structure, O(1) Keys, but O(n) Delete operation. Check the difference by running `go test -bench . -benchmem`
 
 Inspired by [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) and [iancoleman/orderedmap](https://github.com/iancoleman/orderedmap)
+
+## Performance
+
+Similar to Go native map, `jsonmap` has O(1) time for Get, Set, Delete. Additionally it has Push, First, Last, Next, Prev operations, which are also O(1)
+
+```
+➜ go test -bench . -benchmem
+...
+
+Benchmark/Ops/Get/jsonmap-10           10133562               118.1 ns/op             0 B/op          0 allocs/op
+Benchmark/Ops/Get/simplemap-10         11165646               110.1 ns/op             0 B/op          0 allocs/op
+Benchmark/Ops/Get/gomap-10             10916256               110.7 ns/op             0 B/op          0 allocs/op
+
+Benchmark/Ops/SetExisting/jsonmap-10    3813949               278.3 ns/op            25 B/op          1 allocs/op
+Benchmark/Ops/SetExisting/simplemap-10  4422174               239.2 ns/op            37 B/op          0 allocs/op
+Benchmark/Ops/SetExisting/gomap-10      7771100               144.1 ns/op             7 B/op          0 allocs/op
+
+Benchmark/Ops/SetNew/jsonmap-10         3636994               292.2 ns/op            55 B/op          1 allocs/op
+Benchmark/Ops/SetNew/simplemap-10       4094977               267.8 ns/op           131 B/op          1 allocs/op
+Benchmark/Ops/SetNew/gomap-10           6028083               168.5 ns/op            15 B/op          1 allocs/op
+
+Benchmark/Ops/Delete/jsonmap-10         5974435               192.0 ns/op             0 B/op          0 allocs/op
+Benchmark/Ops/Delete/simplemap-10           140           8937567 ns/op               0 B/op          0 allocs/op
+Benchmark/Ops/Delete/gomap-10           9750571               114.8 ns/op             0 B/op          0 allocs/op
+```
+
+Suite benchmark does 10k of Set and Get, and 1k of Delete operations. `jsonmap` performance is on par with native Go map. `simplemap` is slower because of O(N) Delete
+
+```
+Benchmark/Suite/jsonmap-10                    33          33939048 ns/op        24056151 B/op     621895 allocs/op
+Benchmark/Suite/simplemap-10                   2         922005438 ns/op        32889740 B/op     521865 allocs/op
+Benchmark/Suite/gomap-10                      38          30634451 ns/op        23947561 B/op     521837 allocs/op
+```
+
+## Installation
+```bash
+$ go get github.com/metalim/jsonmap
+```
 
 ## Usage
 
@@ -28,13 +66,13 @@ import (
 	// jsonmap "github.com/metalim/jsonmap/simplemap"
 )
 
-const input = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
+const sampleJSON = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`
 
 func main() {
 	m := jsonmap.New()
 
 	// unmarshal, keeping order
-	err := json.Unmarshal([]byte(input), &m)
+	err := json.Unmarshal([]byte(sampleJSON), &m)
 	if err != nil {
 		panic(err)
 	}
@@ -51,8 +89,8 @@ func main() {
 		panic(err)
 	}
 
-	if string(output) == input {
-		fmt.Println("output == input")
+	if string(output) == sampleJSON {
+		fmt.Println("output == sampleJSON")
 	}
 
 	// iterate
@@ -101,7 +139,7 @@ func main() {
 
 ## Alternatives
 
-* [iancoleman/orderedmap](https://github.com/iancoleman/orderedmap) — has O(n) time for Delete
-* [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) — Unmarshal creates nested maps as vanilla unordered maps, which makes it useless for my purposes
+* [iancoleman/orderedmap](https://github.com/iancoleman/orderedmap) — has O(n) time for Delete, similar to `simplemap`
+* [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) — Unmarshal creates nested maps as native unordered maps, which makes it useless for my purposes
 
 Let me know of other alternatives, I'll add them here
