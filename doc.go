@@ -57,10 +57,6 @@
 //
 //	m.Clear()
 //
-// Merge another map into this one:
-//
-//	m.Merge(other)
-//
 // Serialize to JSON:
 //
 //	data, err := json.Marshal(m)
