@@ -1,4 +1,4 @@
-package jsonmap_test
+package test_test
 
 import (
 	"github.com/metalim/jsonmap"

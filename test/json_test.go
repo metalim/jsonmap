@@ -1,4 +1,4 @@
-package jsonmap_test
+package test_test
 
 import (
 	"encoding/json"
@@ -29,21 +29,22 @@ type IMapShort interface {
 	Keys() []Key
 }
 
-func TestFastMap(t *testing.T) {
-	testMap(t, jsonmap.New)
+func TestSerialization(t *testing.T) {
+	t.Run("JSONMap", func(t *testing.T) {
+		testSerialization(t, jsonmap.New)
+	})
+	t.Run("SimpleMap", func(t *testing.T) {
+		testSerialization(t, simplemap.New)
+	})
 }
 
-func TestSimpleMap(t *testing.T) {
-	testMap(t, simplemap.New)
-}
-
-func testMap[T IMapShort](t *testing.T, newMap func() T) {
+func testSerialization[T IMapShort](t *testing.T, newMap func() T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// due to random nature of Go map iteration, we need to test it many times
 			for i := 0; i < TEST_ITERATIONS; i++ {
 				m := newMap()
-				testSerialization(t, test.json, m)
+				testSerializationOnce(t, test.json, m)
 				if test.name == "PlainJSON" {
 					verifyPlainJSON(t, m)
 				}
@@ -52,7 +53,7 @@ func testMap[T IMapShort](t *testing.T, newMap func() T) {
 	}
 }
 
-func testSerialization(t *testing.T, testData string, m IMapShort) {
+func testSerializationOnce(t *testing.T, testData string, m IMapShort) {
 	err := json.Unmarshal([]byte(testData), &m)
 	assert.Equal(t, err, nil)
 

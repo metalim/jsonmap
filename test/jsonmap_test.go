@@ -1,4 +1,4 @@
-package jsonmap_test
+package test_test
 
 import (
 	"testing"
@@ -12,11 +12,11 @@ const TEST_ITERATIONS = 100
 
 func TestJSONMap(t *testing.T) {
 	for i := 0; i < TEST_ITERATIONS; i++ {
-		testJSONMap(t, i)
+		testJSONMapOnce(t, i)
 	}
 }
 
-func testJSONMap(t *testing.T, i int) {
+func testJSONMapOnce(t *testing.T, i int) {
 	m := jsonmap.New()
 	m.Set("a", 1)
 	m.Set("d", "2")
@@ -29,7 +29,7 @@ func testJSONMap(t *testing.T, i int) {
 	m.Delete("e") // test for index bug: delete "e" and not "b"
 	assert.Equal(t, m.Len(), 3)
 
-	// keys
+	// keys in insertion order
 	assert.Equal(t, len(m.Keys()), 3)
 	assert.Equal(t, m.Keys()[0], "a")
 	assert.Equal(t, m.Keys()[1], "d")
