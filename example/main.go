@@ -23,8 +23,8 @@ func main() {
 	// get values
 	val, ok := m.Get("an")
 	fmt.Println("an: ", val, ok) // article true
-	val, ok = m.Get("non-existant")
-	fmt.Println("non-existant", val, ok) // <nil> false
+	val, ok = m.Get("non-existent")
+	fmt.Println("non-existent", val, ok) // <nil> false
 
 	// marshal, keeping order
 	output, err := json.Marshal(&m)
