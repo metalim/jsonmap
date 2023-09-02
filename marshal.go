@@ -17,9 +17,10 @@ func (m *Map) MarshalJSON() ([]byte, error) {
 		if i > 0 {
 			buf.WriteByte(',')
 		}
-		buf.WriteByte('"')
-		buf.WriteString(key)
-		buf.WriteString(`":`)
+		if err := enc.Encode(key); err != nil {
+			return nil, err
+		}
+		buf.WriteByte(':')
 		if err := enc.Encode(m.elements[key].value); err != nil {
 			return nil, err
 		}
