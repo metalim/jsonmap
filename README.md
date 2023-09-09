@@ -26,29 +26,29 @@ Similar to Go native map, `jsonmap` has O(1) time for Get, Set, Delete. Addition
 ➜ go test -bench . -benchmem
 ...
 
+Benchmark/Ops/Get/gomap-10             10916256               110.7 ns/op             0 B/op          0 allocs/op
 Benchmark/Ops/Get/jsonmap-10           10133562               118.1 ns/op             0 B/op          0 allocs/op
 Benchmark/Ops/Get/simplemap-10         11165646               110.1 ns/op             0 B/op          0 allocs/op
-Benchmark/Ops/Get/gomap-10             10916256               110.7 ns/op             0 B/op          0 allocs/op
 
+Benchmark/Ops/SetExisting/gomap-10      7771100               144.1 ns/op             7 B/op          0 allocs/op
 Benchmark/Ops/SetExisting/jsonmap-10    3813949               278.3 ns/op            25 B/op          1 allocs/op
 Benchmark/Ops/SetExisting/simplemap-10  4422174               239.2 ns/op            37 B/op          0 allocs/op
-Benchmark/Ops/SetExisting/gomap-10      7771100               144.1 ns/op             7 B/op          0 allocs/op
 
+Benchmark/Ops/SetNew/gomap-10           6028083               168.5 ns/op            15 B/op          1 allocs/op
 Benchmark/Ops/SetNew/jsonmap-10         3636994               292.2 ns/op            55 B/op          1 allocs/op
 Benchmark/Ops/SetNew/simplemap-10       4094977               267.8 ns/op           131 B/op          1 allocs/op
-Benchmark/Ops/SetNew/gomap-10           6028083               168.5 ns/op            15 B/op          1 allocs/op
 
+Benchmark/Ops/Delete/gomap-10           9750571               114.8 ns/op             0 B/op          0 allocs/op
 Benchmark/Ops/Delete/jsonmap-10         5974435               192.0 ns/op             0 B/op          0 allocs/op
 Benchmark/Ops/Delete/simplemap-10           140           8937567 ns/op               0 B/op          0 allocs/op
-Benchmark/Ops/Delete/gomap-10           9750571               114.8 ns/op             0 B/op          0 allocs/op
 ```
 
 Suite benchmark does 10k of Set and Get, and 1k of Delete operations. `jsonmap` performance is on par with native Go map. `simplemap` is slower because of O(N) Delete
 
 ```
+Benchmark/Suite/gomap-10                      38          30634451 ns/op        23947561 B/op     521837 allocs/op
 Benchmark/Suite/jsonmap-10                    33          33939048 ns/op        24056151 B/op     621895 allocs/op
 Benchmark/Suite/simplemap-10                   2         922005438 ns/op        32889740 B/op     521865 allocs/op
-Benchmark/Suite/gomap-10                      38          30634451 ns/op        23947561 B/op     521837 allocs/op
 ```
 
 ## Installation
