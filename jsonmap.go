@@ -7,8 +7,8 @@ package jsonmap
 // serializing to JSON, and has additional methods to iterate from any element.
 // Similar to native map, user has to take care of concurrent access and nil map value.
 type Map struct {
-	elements    map[Key]*element
-	first, last *element
+	elements    map[Key]*Element
+	first, last *Element
 }
 
 // New returns a new map. O(1) time.
@@ -16,7 +16,7 @@ type Map struct {
 //	m := jsonmap.New()
 func New() *Map {
 	return &Map{
-		elements: make(map[Key]*element),
+		elements: make(map[Key]*Element),
 	}
 }
 
@@ -24,7 +24,7 @@ func New() *Map {
 //
 //	m.Clear()
 func (m *Map) Clear() {
-	m.elements = make(map[Key]*element)
+	m.elements = make(map[Key]*Element)
 	m.first = nil
 	m.last = nil
 }
@@ -72,7 +72,7 @@ func (m *Map) Set(key Key, value Value) {
 		elem.value = value
 		return
 	}
-	elem := &element{
+	elem := &Element{
 		key:   key,
 		value: value,
 	}
@@ -136,20 +136,23 @@ func (m *Map) Pop() (key Key, value Value, ok bool) {
 // First returns the first element in the map, for iteration.
 // Returns nil if the map is empty.
 // O(1) time.
-func (m *Map) First() Element {
+func (m *Map) First() *Element {
 	return m.first
 }
 
 // Last returns the last element in the map, for iteration for backwards iteration.
 // Returns nil if the map is empty.
 // O(1) time.
-func (m *Map) Last() Element {
+func (m *Map) Last() *Element {
 	return m.last
 }
 
 // GetElement returns the element for the key, for iteration from a needle.
 // Returns nil if the key is not in the map.
 // O(1) time.
-func (m *Map) GetElement(key Key) Element {
-	return m.elements[key]
+func (m *Map) GetElement(key Key) *Element {
+	if el, ok := m.elements[key]; ok {
+		return el
+	}
+	return nil
 }

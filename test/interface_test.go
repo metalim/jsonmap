@@ -27,11 +27,19 @@ type IMap interface {
 	String() string
 	Keys() []Key
 	Values() []Value
-
-	First() jsonmap.Element
-	Last() jsonmap.Element
-	GetElement(key Key) jsonmap.Element
+}
+type IJSONMap interface {
+	First() *jsonmap.Element
+	Last() *jsonmap.Element
+	GetElement(key Key) *jsonmap.Element
+}
+type ISimpleMap interface {
+	First() *simplemap.Element
+	Last() *simplemap.Element
+	GetElement(key Key) *simplemap.Element
 }
 
 var _ IMap = (*jsonmap.Map)(nil)
 var _ IMap = (*simplemap.Map)(nil)
+var _ IJSONMap = (*jsonmap.Map)(nil)
+var _ ISimpleMap = (*simplemap.Map)(nil)

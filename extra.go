@@ -9,7 +9,7 @@ func (m *Map) SetFront(key Key, value Value) {
 		elem.value = value
 		return
 	}
-	elem := &element{
+	elem := &Element{
 		key:   key,
 		value: value,
 	}

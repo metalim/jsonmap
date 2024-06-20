@@ -52,7 +52,7 @@ func (m *Map) SortKeys(less func(a, b Key) bool) {
 	if m.Len() < 2 {
 		return
 	}
-	elements := make([]*element, 0, len(m.elements))
+	elements := make([]*Element, 0, len(m.elements))
 	for elem := m.first; elem != nil; elem = elem.next {
 		elements = append(elements, elem)
 	}

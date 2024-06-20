@@ -3,36 +3,29 @@ package jsonmap
 type Key = string
 type Value = any
 
-type Element interface {
-	Key() Key
-	Value() Value
-	Next() Element
-	Prev() Element
-}
-
-// element is an element of a map, to be used in iteration.
+// Element of a map, to be used in iteration.
 //
 //	for elem := m.First(); elem != nil; elem = elem.Next() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-type element struct {
+type Element struct {
 	key   Key
 	value Value
 
-	next, prev *element
+	next, prev *Element
 }
 
 // Key returns the key of the element.
 //
 //	key := elem.Key()
-func (e *element) Key() Key {
+func (e *Element) Key() Key {
 	return e.key
 }
 
 // Value returns the value of the element.
 //
 //	value := elem.Value()
-func (e *element) Value() Value {
+func (e *Element) Value() Value {
 	return e.value
 }
 
@@ -43,7 +36,7 @@ func (e *element) Value() Value {
 //	for elem := m.First(); elem != nil; elem = elem.Next() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (e *element) Next() Element {
+func (e *Element) Next() *Element {
 	return e.next
 }
 
@@ -54,6 +47,6 @@ func (e *element) Next() Element {
 //	for elem := m.Last(); elem != nil; elem = elem.Prev() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (e *element) Prev() Element {
+func (e *Element) Prev() *Element {
 	return e.prev
 }

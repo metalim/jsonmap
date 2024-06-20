@@ -1,13 +1,11 @@
 package jsonmap
 
-import "github.com/metalim/jsonmap"
-
-// element is an element of a map, to be used in iteration.
+// Element of a map, to be used in iteration.
 //
 //	for elem := m.First(); elem != nil; elem = elem.Next() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-type element struct {
+type Element struct {
 	m     *Map
 	index int
 }
@@ -15,14 +13,14 @@ type element struct {
 // Key returns the key of the element.
 //
 //	key := elem.Key()
-func (e *element) Key() Key {
+func (e *Element) Key() Key {
 	return e.m.keys[e.index]
 }
 
 // Value returns the value of the element.
 //
 //	value := elem.Value()
-func (e *element) Value() Value {
+func (e *Element) Value() Value {
 	return e.m.values[e.Key()]
 }
 
@@ -33,11 +31,11 @@ func (e *element) Value() Value {
 //	for elem := m.First(); elem != nil; elem = elem.Next() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (e *element) Next() jsonmap.Element {
+func (e *Element) Next() *Element {
 	if e.index == len(e.m.keys)-1 {
 		return nil
 	}
-	return &element{
+	return &Element{
 		m:     e.m,
 		index: e.index + 1,
 	}
@@ -50,11 +48,11 @@ func (e *element) Next() jsonmap.Element {
 //	for elem := m.Last(); elem != nil; elem = elem.Prev() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (e *element) Prev() jsonmap.Element {
+func (e *Element) Prev() *Element {
 	if e.index == 0 {
 		return nil
 	}
-	return &element{
+	return &Element{
 		m:     e.m,
 		index: e.index - 1,
 	}
@@ -67,8 +65,8 @@ func (e *element) Prev() jsonmap.Element {
 //	for elem := m.First(); elem != nil; elem = elem.Next() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (m *Map) First() jsonmap.Element {
-	return &element{
+func (m *Map) First() *Element {
+	return &Element{
 		m:     m,
 		index: 0,
 	}
@@ -81,8 +79,8 @@ func (m *Map) First() jsonmap.Element {
 //	for elem := m.Last(); elem != nil; elem = elem.Prev() {
 //	    fmt.Println(elem.Key(), elem.Value())
 //	}
-func (m *Map) Last() jsonmap.Element {
-	return &element{
+func (m *Map) Last() *Element {
+	return &Element{
 		m:     m,
 		index: len(m.keys) - 1,
 	}
@@ -91,11 +89,11 @@ func (m *Map) Last() jsonmap.Element {
 // GetElement returns the element for the key, for iteration from a needle.
 // Returns nil if the key is not in the map.
 // O(n) for existing keys, because it uses KeyIndex().
-func (m *Map) GetElement(key Key) jsonmap.Element {
+func (m *Map) GetElement(key Key) *Element {
 	if _, ok := m.values[key]; !ok {
 		return nil
 	}
-	return &element{
+	return &Element{
 		m:     m,
 		index: m.KeyIndex(key),
 	}

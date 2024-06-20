@@ -18,8 +18,38 @@ func TestJSONMap(t *testing.T) {
 
 func testJSONMapOnce(t *testing.T, i int) {
 	m := jsonmap.New()
+	// no elements
+	assert.Equal(t, m.Len(), 0)
+	assert.Equal(t, len(m.Keys()), 0)
+	assert.Equal(t, m.String(), "map[]")
+	assert.Nil(t, m.First())
+	assert.Nil(t, m.Last())
+
+	// 1 element
 	m.Set("a", 1)
+	assert.Equal(t, m.Len(), 1)
+	assert.Equal(t, len(m.Keys()), 1)
+	assert.Equal(t, m.Keys()[0], "a")
+	assert.Equal(t, m.First().Key(), m.Keys()[0])
+	assert.Equal(t, m.First().Key(), m.Last().Key())
+	assert.Nil(t, m.First().Next())
+	assert.Nil(t, m.Last().Prev())
+	assert.Equal(t, m.String(), "map[a:1]")
+
+	// 2 elements
 	m.Set("d", "2")
+	assert.Equal(t, m.Len(), 2)
+	assert.Equal(t, len(m.Keys()), 2)
+	assert.Equal(t, m.Keys()[0], "a")
+	assert.Equal(t, m.Keys()[1], "d")
+	assert.Equal(t, m.First().Key(), m.Keys()[0])
+	assert.Equal(t, m.Last().Key(), m.Keys()[1])
+	assert.Nil(t, m.First().Prev())
+	assert.Equal(t, m.First().Next(), m.Last())
+	assert.Equal(t, m.Last().Prev(), m.First())
+	assert.Nil(t, m.Last().Next())
+	assert.Equal(t, m.String(), "map[a:1 d:2]")
+
 	m.Set("c", 3)
 	m.Set("e", 5)
 	m.Set("b", 6)
@@ -61,8 +91,8 @@ func testJSONMapOnce(t *testing.T, i int) {
 	assert.Equal(t, v.(int), 7)
 	v, ok = m.Get("c")
 	assert.True(t, !ok)
-	assert.Equal(t, v, nil)
+	assert.Nil(t, v)
 	v, ok = m.Get("e")
 	assert.True(t, !ok)
-	assert.Equal(t, v, nil)
+	assert.Nil(t, v)
 }
