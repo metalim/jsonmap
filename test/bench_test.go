@@ -7,12 +7,10 @@ import (
 	"testing"
 
 	"github.com/metalim/jsonmap"
-	simplemap "github.com/metalim/jsonmap/simplemap"
 )
 
 const (
-	BENCHMARK_SIMPLEMAP = true
-	BENCHMARK_GOMAP     = true
+	BENCHMARK_GOMAP = true
 
 	SET_KEYS    = 1e5
 	DELETE_KEYS = 1e4
@@ -142,9 +140,6 @@ var mapDefs = []mapDef{
 }
 
 func init() {
-	if BENCHMARK_SIMPLEMAP {
-		mapDefs = append(mapDefs, mapDef{"simplemap", func() IMapShort { return simplemap.New() }})
-	}
 	if BENCHMARK_GOMAP {
 		mapDefs = append(mapDefs, mapDef{"gomap", func() IMapShort { return GoMap{} }})
 	}

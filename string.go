@@ -10,7 +10,7 @@ func (m *Map) String() string {
 	var b strings.Builder
 	b.WriteString(`map[`)
 	for el := m.First(); el != nil; el = el.Next() {
-		if el != m.First() { // safe to compare pointers for main version
+		if el != m.First() { // safe to compare pointers
 			b.WriteByte(' ')
 		}
 		b.WriteString(el.Key())

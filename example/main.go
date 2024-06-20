@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/metalim/jsonmap"
-	// or simpler alternative, but with O(n) Delete()
-	// jsonmap "github.com/metalim/jsonmap/simplemap"
 )
 
 const sampleJSON = `{"an":"article","empty":null,"sub":{"s":1,"e":2,"x":3,"y":4},"bool":false,"array":[1,2,3]}`

@@ -1,9 +1,6 @@
 package test_test
 
-import (
-	"github.com/metalim/jsonmap"
-	simplemap "github.com/metalim/jsonmap/simplemap"
-)
+import "github.com/metalim/jsonmap"
 
 type Key = string
 type Value = any
@@ -28,18 +25,11 @@ type IMap interface {
 	Keys() []Key
 	Values() []Value
 }
-type IJSONMap interface {
+type IElementPointers interface {
 	First() *jsonmap.Element
 	Last() *jsonmap.Element
 	GetElement(key Key) *jsonmap.Element
 }
-type ISimpleMap interface {
-	First() *simplemap.Element
-	Last() *simplemap.Element
-	GetElement(key Key) *simplemap.Element
-}
 
 var _ IMap = (*jsonmap.Map)(nil)
-var _ IMap = (*simplemap.Map)(nil)
-var _ IJSONMap = (*jsonmap.Map)(nil)
-var _ ISimpleMap = (*simplemap.Map)(nil)
+var _ IElementPointers = (*jsonmap.Map)(nil)

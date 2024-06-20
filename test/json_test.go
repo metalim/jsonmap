@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/metalim/jsonmap"
-	simplemap "github.com/metalim/jsonmap/simplemap"
 	"github.com/zeebo/assert"
 )
 
@@ -32,9 +31,6 @@ type IMapShort interface {
 func TestSerialization(t *testing.T) {
 	t.Run("JSONMap", func(t *testing.T) {
 		testSerialization(t, jsonmap.New)
-	})
-	t.Run("SimpleMap", func(t *testing.T) {
-		testSerialization(t, simplemap.New)
 	})
 }
 
