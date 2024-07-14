@@ -18,6 +18,7 @@ func TestJSONMap(t *testing.T) {
 
 func testJSONMapOnce(t *testing.T, i int) {
 	m := jsonmap.New()
+
 	// no elements
 	assert.Equal(t, m.Len(), 0)
 	assert.Equal(t, len(m.Keys()), 0)
@@ -26,17 +27,45 @@ func testJSONMapOnce(t *testing.T, i int) {
 	assert.Nil(t, m.Last())
 
 	// 1 element
-	m.Set("a", 1)
+	m.Set("y", 1)
 	assert.Equal(t, m.Len(), 1)
 	assert.Equal(t, len(m.Keys()), 1)
-	assert.Equal(t, m.Keys()[0], "a")
+	assert.Equal(t, m.Keys()[0], "y")
 	assert.Equal(t, m.First().Key(), m.Keys()[0])
 	assert.Equal(t, m.First().Key(), m.Last().Key())
 	assert.Nil(t, m.First().Next())
 	assert.Nil(t, m.Last().Prev())
-	assert.Equal(t, m.String(), "map[a:1]")
+	assert.Equal(t, m.String(), "map[y:1]")
+
+	// delete single element
+	m.Delete("y")
+	assert.Equal(t, m.Len(), 0)
+	assert.Equal(t, len(m.Keys()), 0)
+	assert.Equal(t, m.String(), "map[]")
+	assert.Nil(t, m.First())
+	assert.Nil(t, m.Last())
+
+	// 1 element
+	m.Set("z", 1)
+	assert.Equal(t, m.Len(), 1)
+	assert.Equal(t, len(m.Keys()), 1)
+	assert.Equal(t, m.Keys()[0], "z")
+	assert.Equal(t, m.First().Key(), m.Keys()[0])
+	assert.Equal(t, m.First().Key(), m.Last().Key())
+	assert.Nil(t, m.First().Next())
+	assert.Nil(t, m.Last().Prev())
+	assert.Equal(t, m.String(), "map[z:1]")
+
+	// clear map
+	m.Clear()
+	assert.Equal(t, m.Len(), 0)
+	assert.Equal(t, len(m.Keys()), 0)
+	assert.Equal(t, m.String(), "map[]")
+	assert.Nil(t, m.First())
+	assert.Nil(t, m.Last())
 
 	// 2 elements
+	m.Set("a", 1)
 	m.Set("d", "2")
 	assert.Equal(t, m.Len(), 2)
 	assert.Equal(t, len(m.Keys()), 2)
@@ -73,7 +102,7 @@ func testJSONMapOnce(t *testing.T, i int) {
 	assert.True(t, ok)
 	assert.Equal(t, vInt, 1)
 	vString, ok := jsonmap.GetAs[string](m, "a")
-	assert.True(t, !ok)
+	assert.False(t, ok)
 	assert.Equal(t, vString, "")
 
 	v, ok = m.Get("d")
@@ -83,16 +112,20 @@ func testJSONMapOnce(t *testing.T, i int) {
 	assert.True(t, ok)
 	assert.Equal(t, vString, "2")
 	vInt, ok = jsonmap.GetAs[int](m, "d")
-	assert.True(t, !ok)
+	assert.False(t, ok)
+	assert.Equal(t, vInt, 0)
+
+	vInt, ok = jsonmap.GetAs[int](m, "nonexistent")
+	assert.False(t, ok)
 	assert.Equal(t, vInt, 0)
 
 	v, ok = m.Get("b")
 	assert.True(t, ok)
 	assert.Equal(t, v.(int), 7)
 	v, ok = m.Get("c")
-	assert.True(t, !ok)
+	assert.False(t, ok)
 	assert.Nil(t, v)
 	v, ok = m.Get("e")
-	assert.True(t, !ok)
+	assert.False(t, ok)
 	assert.Nil(t, v)
 }

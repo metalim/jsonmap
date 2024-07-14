@@ -18,30 +18,25 @@ Inspired by [wk8/go-ordered-map](https://github.com/wk8/go-ordered-map) and [ian
 
 ## Performance
 
-Similar to Go native map, `jsonmap` has O(1) time for Get, Set, Delete. Additionally it has Push, First, Last, Next, Prev operations, which are also O(1)
+Similar to Go native map, `jsonmap` has O(1) time for Get, Set, Delete. Additionally it has Push, First, Last, Next, Prev operations, which are also O(1). Suite benchmark does 10k of Set and Get, and 1k of Delete operations. `jsonmap` performance is on par with native Go map
 
 ```
-➜ go test -bench . -benchmem
-...
-
-Benchmark/Ops/Get/gomap-10             10916256               110.7 ns/op             0 B/op          0 allocs/op
-Benchmark/Ops/Get/jsonmap-10           10133562               118.1 ns/op             0 B/op          0 allocs/op
-
-Benchmark/Ops/SetExisting/gomap-10      7771100               144.1 ns/op             7 B/op          0 allocs/op
-Benchmark/Ops/SetExisting/jsonmap-10    3813949               278.3 ns/op            25 B/op          1 allocs/op
-
-Benchmark/Ops/SetNew/gomap-10           6028083               168.5 ns/op            15 B/op          1 allocs/op
-Benchmark/Ops/SetNew/jsonmap-10         3636994               292.2 ns/op            55 B/op          1 allocs/op
-
-Benchmark/Ops/Delete/gomap-10           9750571               114.8 ns/op             0 B/op          0 allocs/op
-Benchmark/Ops/Delete/jsonmap-10         5974435               192.0 ns/op             0 B/op          0 allocs/op
-```
-
-Suite benchmark does 10k of Set and Get, and 1k of Delete operations. `jsonmap` performance is on par with native Go map
-
-```
-Benchmark/Suite/gomap-10                      38          30634451 ns/op        23947561 B/op     521837 allocs/op
-Benchmark/Suite/jsonmap-10                    33          33939048 ns/op        24056151 B/op     621895 allocs/op
+➜ go test -bench . -benchmem ./test
+goos: darwin
+goarch: arm64
+pkg: github.com/metalim/jsonmap/test
+Benchmark/Suite/jsonmap-10            36          31614692 ns/op        17046302 B/op     623006 allocs/op
+Benchmark/Suite/gomap-10              48          25116164 ns/op        14791564 B/op     522925 allocs/op
+Benchmark/Ops/Get/jsonmap-10            11191284               112.3 ns/op             0 B/op          0 allocs/op
+Benchmark/Ops/Get/gomap-10              11543529                97.88 ns/op            0 B/op          0 allocs/op
+Benchmark/Ops/SetExisting/jsonmap-10     5847512               291.3 ns/op           106 B/op          1 allocs/op
+Benchmark/Ops/SetExisting/gomap-10       7608140               174.6 ns/op            89 B/op          1 allocs/op
+Benchmark/Ops/SetNew/jsonmap-10          2548009               429.3 ns/op           242 B/op          2 allocs/op
+Benchmark/Ops/SetNew/gomap-10            5143821               212.3 ns/op           133 B/op          1 allocs/op
+Benchmark/Ops/Delete/jsonmap-10          7642382               156.0 ns/op             0 B/op          0 allocs/op
+Benchmark/Ops/Delete/gomap-10           10592187               102.4 ns/op             0 B/op          0 allocs/op
+PASS
+ok      github.com/metalim/jsonmap/test 143.577s
 ```
 
 ## Installation
