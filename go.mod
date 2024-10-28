@@ -1,4 +1,4 @@
-module github.com/metalim/jsonmap
+module github.com/lasarocamargos/jsonmap
 
 go 1.20
 
