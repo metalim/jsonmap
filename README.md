@@ -4,6 +4,7 @@
 [![go report](https://goreportcard.com/badge/github.com/metalim/jsonmap)](https://goreportcard.com/report/github.com/metalim/jsonmap)
 [![codecov](https://codecov.io/gh/metalim/jsonmap/graph/badge.svg?token=HLGJ7U07JH)](https://codecov.io/gh/metalim/jsonmap)
 [![go doc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/metalim/jsonmap)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/metalim/jsonmap)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/mit/)
 
 Simple ordered map for Go, with JSON restrictions. The main purpose is to keep same order of keys after parsing JSON and generating it again, so Unmarshal followed by Marshal generates exactly the same JSON structure
