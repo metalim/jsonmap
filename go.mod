@@ -1,4 +1,4 @@
-module github.com/lasarocamargos/jsonmap
+module github.com/weilliptic-public/jsonmap
 
 go 1.20
 
