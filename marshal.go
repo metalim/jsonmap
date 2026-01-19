@@ -13,6 +13,7 @@ func (m *Map) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	buf.WriteByte('{')
 	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(m.escapeHTML)
 	for i, key := range m.Keys() {
 		if i > 0 {
 			buf.WriteByte(',')

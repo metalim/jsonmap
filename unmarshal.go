@@ -53,6 +53,7 @@ func decodeMap(d *json.Decoder, m *Map) error {
 
 		case json.Delim('{'):
 			m2 := New()
+			m2.SetEscapeHTML(m.escapeHTML)
 			err = decodeMap(d, m2)
 			if err != nil {
 				return err
@@ -60,7 +61,7 @@ func decodeMap(d *json.Decoder, m *Map) error {
 			m.Push(key, m2)
 
 		case json.Delim('['):
-			a, err := decodeArray(d)
+			a, err := decodeArray(d, m.escapeHTML)
 			if err != nil {
 				return err
 			}
@@ -72,7 +73,7 @@ func decodeMap(d *json.Decoder, m *Map) error {
 	}
 }
 
-func decodeArray(d *json.Decoder) ([]any, error) {
+func decodeArray(d *json.Decoder, escapeHTML bool) ([]any, error) {
 	a := make([]any, 0)
 	for {
 		tok, err := d.Token()
@@ -87,6 +88,7 @@ func decodeArray(d *json.Decoder) ([]any, error) {
 
 		case json.Delim('{'):
 			m := New()
+			m.SetEscapeHTML(escapeHTML)
 			err = decodeMap(d, m)
 			if err != nil {
 				return a, err
@@ -94,7 +96,7 @@ func decodeArray(d *json.Decoder) ([]any, error) {
 			a = append(a, m)
 
 		case json.Delim('['):
-			a2, err := decodeArray(d)
+			a2, err := decodeArray(d, escapeHTML)
 			if err != nil {
 				return a, err
 			}

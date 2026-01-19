@@ -1,6 +1,7 @@
 package test_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -84,4 +85,75 @@ func verifyPlainJSON(t *testing.T, m IMapShort) {
 	v, ok = m.Get("f")
 	assert.False(t, ok)
 	assert.Equal(t, v, nil)
+}
+
+func encodeJSON(v any, escapeHTML bool) (string, error) {
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(escapeHTML)
+	err := enc.Encode(v)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes.TrimRight(buf.Bytes(), "\n")), nil
+}
+
+func TestHTMLEscaping(t *testing.T) {
+	const rawJSON = `{"range":">1.0.0 && <2.0.0"}`
+	const escapedJSON = `{"range":"\u003e1.0.0 \u0026\u0026 \u003c2.0.0"}`
+	const nestedRawJSON = `{"name":"test","deps":{"a":">1.0","b":"<2.0 & >=1.5"},"tags":["<root>","&"]}`
+	const nestedArrayJSON = `{"name":"test","list":[{"op":">="},{"op":"<="}]}`
+
+	t.Run("DefaultMarshal", func(t *testing.T) {
+		m := jsonmap.New()
+		err := json.Unmarshal([]byte(rawJSON), m)
+		assert.NoError(t, err)
+
+		data, err := json.Marshal(m)
+		assert.NoError(t, err)
+		assert.Equal(t, string(data), escapedJSON)
+	})
+
+	t.Run("DefaultEncode", func(t *testing.T) {
+		m := jsonmap.New()
+		err := json.Unmarshal([]byte(rawJSON), m)
+		assert.NoError(t, err)
+
+		data, err := encodeJSON(m, true)
+		assert.NoError(t, err)
+		assert.Equal(t, data, escapedJSON)
+	})
+
+	t.Run("EncodeNoEscape", func(t *testing.T) {
+		m := jsonmap.New()
+		m.SetEscapeHTML(false)
+		err := json.Unmarshal([]byte(rawJSON), m)
+		assert.NoError(t, err)
+
+		data, err := encodeJSON(m, false)
+		assert.NoError(t, err)
+		assert.Equal(t, data, rawJSON)
+	})
+
+	t.Run("EncodeNoEscapeNested", func(t *testing.T) {
+		m := jsonmap.New()
+		m.SetEscapeHTML(false)
+		err := json.Unmarshal([]byte(nestedRawJSON), m)
+		assert.NoError(t, err)
+
+		data, err := encodeJSON(m, false)
+		assert.NoError(t, err)
+		assert.Equal(t, data, nestedRawJSON)
+	})
+
+	t.Run("EncodeNoEscapeNestedArray", func(t *testing.T) {
+		m := jsonmap.New()
+		m.SetEscapeHTML(false)
+		err := json.Unmarshal([]byte(nestedArrayJSON), m)
+		assert.NoError(t, err)
+
+		data, err := encodeJSON(m, false)
+		assert.NoError(t, err)
+		assert.Equal(t, data, nestedArrayJSON)
+	})
 }

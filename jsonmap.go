@@ -9,6 +9,7 @@ package jsonmap
 type Map struct {
 	elements    map[Key]*Element
 	first, last *Element
+	escapeHTML  bool
 }
 
 // New returns a new map. O(1) time.
@@ -16,7 +17,8 @@ type Map struct {
 //	m := jsonmap.New()
 func New() *Map {
 	return &Map{
-		elements: make(map[Key]*Element),
+		elements:   make(map[Key]*Element),
+		escapeHTML: true,
 	}
 }
 
@@ -155,4 +157,12 @@ func (m *Map) GetElement(key Key) *Element {
 		return el
 	}
 	return nil
+}
+
+// SetEscapeHTML sets whether HTML characters should be escaped when marshaling to JSON.
+// This setting is propagated to nested maps and arrays when unmarshaling from JSON.
+// Set to true by default.
+// O(1) time.
+func (m *Map) SetEscapeHTML(escape bool) {
+	m.escapeHTML = escape
 }
